@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const sequelize = require('./models');
+const { Expense } = require('./models');
+
+app.use(express.json());
 
 let myBudget =  [
   {
@@ -48,7 +50,7 @@ app.get('/budget', (req, res) => {
 
 //Get all friends
 app.get('/friends', (req, res) => {
-    res.status().json(friends);
+    res.status(204).json(friends);
     console.log(friends);
     // console.log(friends[0].name);
     // console.log(friends[1].name);
@@ -65,6 +67,51 @@ app.get('/friends/:name', (req, res) => {
     res.status(404).json({ error: 'Friend not found' });
   } else {
     res.status(200).json(filteredFriends);
+  }
+});
+
+
+
+// ACTUAL CODE FOR THE BUDGET PAL SERVER
+
+
+app.get('/expenses', async (req, res) => {
+  try {
+    const expenses = await Expense.findAll({
+      order: [
+        ['date', 'DESC'],
+      ],
+    });
+    res.json(expenses);
+  } catch (error) {
+    console.error("Error retrieving expenses:", error);
+    res.status(500).json({ message: 'Cannot get expenses', error: error.message });
+  }
+});
+
+app.post('/expenses', async (req, res) => {
+  try {
+    const { concept, amount, category, date, color, isRecurring } = req.body;
+    const newExpense = await Expense.create({ concept, amount, category, date, color, isRecurring });
+    res.status(201).json(newExpense);
+  } catch (error) {
+    res.status(500).json({ message: 'Cannot post expenses', error: error.message });
+  }
+});
+
+app.delete('/expenses/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await Expense.destroy({
+      where: { id }
+    });
+    if (result === 1) {
+      res.status(200).send({ message: "Expense deleted successfully" });
+    } else {
+      res.status(404).send({ message: "Expense not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting expense", error: error.message });
   }
 });
 

@@ -50,8 +50,9 @@ const Expense = sequelize.define('Expense', {
     timestamps: false,
   });
 
-  sequelize.sync({ alter: true })
-
+sequelize.sync({ alter: true })
+.then(() => console.log('Database synchronized'))
+.catch(err => console.error('Database synchronization error:', err));
 
 
 async function testConnection() {
