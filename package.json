@@ -20,6 +20,7 @@
   "homepage": "https://github.com/Georgefdz/budget-pal-server#readme",
   "dependencies": {
     "@sequelize/postgres": "^7.0.0-alpha.41",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "pg": "^8.12.0",
